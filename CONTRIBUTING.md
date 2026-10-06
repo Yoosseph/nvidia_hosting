@@ -1,32 +1,37 @@
 # Contributing
 
-The most valuable contribution is **real measurements**. Speed and reliability on the free tier change by the week and even by the hour.
+## Setup and checks
 
-## Add benchmark results
+Use Node.js 24 or later, run `npm ci`, then `npm run dev`. Bring your own NVIDIA API key through Settings or an ignored `.env` file.
 
-```bash
-export NVIDIA_API_KEY="nvapi-..."
-python scripts/bench.py --runs 3 --out results/$(date +%Y-%m-%d)-$(whoami).md
+Before opening a pull request, run:
+
+```sh
+npm test
+npm run models:check
+npm run check:secrets
+npm run build
 ```
 
-This writes a Markdown table with time-to-first-token, tokens/sec, total latency and failure count for each model. Open a PR adding the file under `results/`, and mention your time zone and time of day in the PR description.
+Keep changes focused, explain the resulting behavior, and include relevant validation. Preserve the minimal interface and support both themes and narrow screens. Never commit keys, private prompts, environment files, or generated build output.
 
-Benchmark specific models:
+## Models
 
-```bash
-python scripts/bench.py -m z-ai/glm-5.2 -m moonshotai/kimi-k3 --runs 5
+Update the API snapshot with `npm run models:sync`, then regenerate examples with `npm run models:generate`. Add website entries to `data/nvidia-catalog.json` only with a verified NVIDIA page link. API IDs can differ from website slugs; preserve exact API IDs and cover aliases with a test.
+
+Generated Python files use the shared `models/_client.py`. Specialized models need their own endpoint and payload; do not represent them as working text chat models.
+
+## Model notes and benchmarks
+
+Existing research lives in `docs/`. Link primary sources for factual changes. Separate measured results from estimates and avoid unsupported claims about free access, quotas, speed, or quality.
+
+Standalone benchmark helpers remain under `scripts/`:
+
+```sh
+python scripts/list_models.py
+python scripts/bench.py --runs 3 --out results/benchmark.md
 ```
 
-## Update a model page
+These scripts use `NVIDIA_API_KEY` from the process environment. Review reports before committing them and exclude credentials, private prompts, and machine identifiers.
 
-- Keep the table format: **ID · size · speed · bottleneck · verdict**.
-- Link a source for every claim (forum thread, GitHub issue, model card, benchmark).
-- Separate *measured* from *expected*. Measured claims should cite a file in `results/`.
-- If a model gets retired from the free endpoint, don't delete it. Mark it `❌ retired (YYYY-MM)`.
-
-## Add a new model
-
-1. Confirm it's live with `python scripts/list_models.py --probe`.
-2. Add it to the relevant family page in `docs/models/` (or create one).
-3. Add a row to the scorecard in `README.md` and, if it's a top pick, to `docs/use-cases.md`.
-4. Add its ID to `DEFAULT_MODELS` in `scripts/bench.py`.
+Report sensitive vulnerabilities through the process in [SECURITY.md](SECURITY.md), not public issues.

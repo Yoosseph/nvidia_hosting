@@ -1,10 +1,12 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowDown, ArrowUp, Check, ChevronDown, Copy, Menu, MessageSquare, Plus, Settings2, Sparkles, Square, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Check, ChevronDown, Copy, Menu, MessageSquare, Pencil, Plus, Settings2, Sparkles, Square, Trash2, X } from "lucide-react";
 import { MessageMarkdown } from "@/components/markdown";
 import { Settings } from "@/components/settings";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { ModelDialog } from "@/components/model-dialog";
+import { RenameChat } from "@/components/rename-chat";
 import { CHAT_STORAGE_KEY, DEFAULT_MODEL, newConversation, readConversations, type Conversation, type Message } from "@/lib/types";
 import { readChatStream } from "@/lib/stream";
 
@@ -14,10 +16,14 @@ export default function Home() {
   const [ready, setReady] = useState(false);
   const [model, setModel] = useState(DEFAULT_MODEL);
   const [apiKey, setApiKey] = useState("");
-  const [models, setModels] = useState<string[]>([]);
+  const [models, setModels] = useState<string[]>();
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogRefresh, setCatalogRefresh] = useState(0);
   const [configured, setConfigured] = useState(false);
   const [catalogError, setCatalogError] = useState("");
   const [settings, setSettings] = useState(false);
+  const [modelDialog, setModelDialog] = useState(false);
+  const [renaming, setRenaming] = useState<string | null>(null);
   const [sidebar, setSidebar] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -49,11 +55,13 @@ export default function Home() {
 
   useEffect(() => {
     const controller = new AbortController();
+    setCatalogLoading(true);
     fetch("/api/models", { headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : {}, signal: controller.signal })
-      .then(r => r.json()).then(data => { setConfigured(Boolean(data.configured)); setModels(data.models ?? []); setCatalogError(data.error ?? ""); })
-      .catch(e => { if (e.name !== "AbortError") setCatalogError("Catalog unavailable. Enter a model ID in Settings."); });
+      .then(r => r.json()).then(data => { setConfigured(Boolean(data.configured)); setModels(data.models); setCatalogError(data.error ?? ""); })
+      .catch(e => { if (e.name !== "AbortError") setCatalogError("Catalog unavailable. Showing saved models."); })
+      .finally(() => { if (!controller.signal.aborted) setCatalogLoading(false); });
     return () => controller.abort();
-  }, [apiKey]);
+  }, [apiKey, catalogRefresh]);
 
   useEffect(() => {
     if (follow && scroller.current) scroller.current.scrollTop = scroller.current.scrollHeight;
@@ -121,13 +129,13 @@ export default function Home() {
       <a className="brand" href="/" aria-label="Nim home">nim</a>
       <button className="new-chat" onClick={startNew} disabled={busy}><Plus size={17} /> New chat</button>
       <nav className="history" aria-label="Conversations">
-        {conversations.map(c => <div className={`history-item ${activeId === c.id ? "active" : ""}`} key={c.id}><button disabled={busy} onClick={() => { setActiveId(c.id); setError(""); setSidebar(false); setFollow(true); }}><MessageSquare size={15} /><span>{c.title}</span></button><button className="delete-chat" disabled={busy} aria-label={`Delete ${c.title}`} onClick={() => { setConversations(all => all.filter(x => x.id !== c.id)); if (activeId === c.id) setActiveId(""); }}><Trash2 size={13} /></button></div>)}
+        {conversations.map(c => <div className={`history-item ${activeId === c.id ? "active" : ""}`} key={c.id}><button disabled={busy} onClick={() => { setActiveId(c.id); setError(""); setSidebar(false); setFollow(true); }}><MessageSquare size={15} /><span>{c.title}</span></button><button className="rename-chat" disabled={busy} aria-label={`Rename ${c.title}`} title="Rename chat" onClick={() => setRenaming(c.id)}><Pencil size={13} /></button><button className="delete-chat" disabled={busy} aria-label={`Delete ${c.title}`} onClick={() => { setConversations(all => all.filter(x => x.id !== c.id)); if (activeId === c.id) setActiveId(""); }}><Trash2 size={13} /></button></div>)}
       </nav>
       <div className="sidebar-bottom"><button className="settings-button" disabled={busy} onClick={() => setSettings(true)}><Settings2 size={17} />Settings</button></div>
     </aside>
 
     <main className={`main ${messages.length === 0 ? "is-empty" : ""}`}>
-      <header className="topbar"><div className="model-area"><button className="icon-button mobile-menu" aria-label="Open sidebar" onClick={() => setSidebar(true)}><Menu size={20} /></button><button className="model-button" disabled={busy} onClick={() => setSettings(true)}><span>{shortModel}</span><ChevronDown size={15} /></button></div><div className="topbar-actions"><ThemeToggle /><button className="icon-button" disabled={busy} onClick={() => setSettings(true)} aria-label="Settings" title="Settings"><Settings2 size={18} /></button></div></header>
+      <header className="topbar"><div className="model-area"><button className="icon-button mobile-menu" aria-label="Open sidebar" onClick={() => setSidebar(true)}><Menu size={20} /></button><button className="model-button" disabled={busy} onClick={() => setModelDialog(true)} aria-label={`Change model: ${shortModel}`}><span>{shortModel}</span><ChevronDown size={15} /></button></div><div className="topbar-actions"><ThemeToggle /><button className="icon-button" disabled={busy} onClick={() => setSettings(true)} aria-label="Settings" title="Settings"><Settings2 size={18} /></button></div></header>
       <div className="conversation-scroll" ref={scroller} onScroll={() => { const el = scroller.current; if (el) setFollow(el.scrollHeight - el.scrollTop - el.clientHeight < 100); }}>
         {messages.length === 0 ? <section className="empty-state"><h1>New chat</h1></section> : <section className="messages" aria-label="Chat messages" aria-busy={busy}>{messages.map(m => <article key={m.id} className={`message ${m.role}`}><div className="message-avatar">{m.role === "assistant" ? <Sparkles size={17} /> : "Y"}</div><div className="message-body"><div className="message-label">{m.role === "user" ? "You" : "Nim"}{m.role === "assistant" && <span>{m.model?.split("/").pop()}</span>}</div>{m.reasoning && <details className="reasoning"><summary>Thinking</summary><div>{m.reasoning}</div></details>}{m.role === "user" ? <div className="user-content">{m.content}</div> : <MessageMarkdown content={m.content} />}{m.role === "assistant" && !m.content && busy && <div className="typing" role="status" aria-label="Generating response"><span /><span /><span /></div>}{m.role === "assistant" && m.content && <button className="copy-message" aria-label="Copy response" onClick={() => copyMessage(m)}>{copied === m.id ? <Check size={14} /> : <Copy size={14} />}{copied === m.id ? "Copied" : "Copy"}</button>}</div></article>)}</section>}
       </div>
@@ -140,6 +148,8 @@ export default function Home() {
         </form>
       </div>
     </main>
-    {settings && <Settings apiKey={apiKey} model={model} models={models} configured={configured} catalogError={catalogError} onClose={() => setSettings(false)} onSave={(key, selected) => { setApiKey(key); setModel(selected); setSettings(false); setError(""); textarea.current?.focus(); }} />}
+    {settings && <Settings apiKey={apiKey} model={model} models={models} configured={configured} catalogError={catalogError} catalogLoading={catalogLoading} onRefresh={() => setCatalogRefresh(n => n + 1)} onClose={() => setSettings(false)} onSave={(key, selected) => { setApiKey(key); setModel(selected); setSettings(false); setError(""); textarea.current?.focus(); }} />}
+    {modelDialog && <ModelDialog selected={model} models={models} refreshing={catalogLoading} error={catalogError} onRefresh={() => setCatalogRefresh(n => n + 1)} onClose={() => setModelDialog(false)} onSelect={id => { setModel(id); setModelDialog(false); setError(""); textarea.current?.focus(); }} />}
+    {renaming && <RenameChat title={conversations.find(c => c.id === renaming)?.title ?? ""} onClose={() => setRenaming(null)} onSave={title => { setConversations(all => all.map(c => c.id === renaming ? { ...c, title } : c)); setRenaming(null); }} />}
   </div>;
 }

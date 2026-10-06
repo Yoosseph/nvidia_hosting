@@ -1,0 +1,394 @@
+{
+  "source": "https://build.nvidia.com/models",
+  "checkedOn": "2026-10-07",
+  "models": [
+    {
+      "name": "Kumo Tabular",
+      "path": "/nvidia/kumo-tabular"
+    },
+    {
+      "name": "3D Body Pose",
+      "path": "/nvidia/body-pose"
+    },
+    {
+      "name": "deepseek-v4.1-flash",
+      "path": "/deepseek-ai/deepseek-v4.1-flash"
+    },
+    {
+      "name": "Kumo Relational",
+      "path": "/nvidia/kumo-relational"
+    },
+    {
+      "name": "glm-5-3",
+      "path": "/z-ai/glm-5-3"
+    },
+    {
+      "name": "glm-5-3-flash",
+      "path": "/z-ai/glm-5-3-flash"
+    },
+    {
+      "name": "nemotron-parse-2.0",
+      "path": "/nvidia/nemotron-parse-2.0"
+    },
+    {
+      "name": "parakeet-tdt-0.6b",
+      "path": "/nvidia/parakeet-tdt-0_6b"
+    },
+    {
+      "name": "kimi-k3",
+      "path": "/moonshotai/kimi-k3"
+    },
+    {
+      "name": "wan2.2-animate-2-14b",
+      "path": "/wan-ai/wan2.2-animate-2-14b"
+    },
+    {
+      "name": "nemotron-3.5-lightning-30b-a3b",
+      "path": "/nvidia/nemotron-3.5-lightning-30b-a3b"
+    },
+    {
+      "name": "muse-glimmer-30b",
+      "path": "/meta/muse-glimmer-30b"
+    },
+    {
+      "name": "riva-translate-4b-instruct-v2",
+      "path": "/nvidia/riva-translate-4b-instruct-v2"
+    },
+    {
+      "name": "ising-calibration-1.5-31b",
+      "path": "/nvidia/ising-calibration-1.5-31b"
+    },
+    {
+      "name": "Video Super Resolution NIM",
+      "path": "/nvidia/vsr"
+    },
+    {
+      "name": "nemotron-3-embed-1b",
+      "path": "/nvidia/nemotron-3-embed-1b"
+    },
+    {
+      "name": "laguna-xs-2.1",
+      "path": "/poolside/laguna-xs-2.1"
+    },
+    {
+      "name": "qwen-image-edit-nvpcb-ovsl2sl",
+      "path": "/nvidia/qwen-image-edit-nvpcb-ovsl2sl"
+    },
+    {
+      "name": "nemotron-ocr-v2",
+      "path": "/nvidia/nemotron-ocr-v2"
+    },
+    {
+      "name": "diffusiongemma-26b-a4b-it",
+      "path": "/google/diffusiongemma-26b-a4b-it"
+    },
+    {
+      "name": "nemotron-3-ultra-550b-a55b",
+      "path": "/nvidia/nemotron-3-ultra-550b-a55b"
+    },
+    {
+      "name": "chatterbox-multilingual-tts",
+      "path": "/resembleai/chatterbox-multilingual-tts"
+    },
+    {
+      "name": "nemotron-3.5-content-safety",
+      "path": "/nvidia/nemotron-3.5-content-safety"
+    },
+    {
+      "name": "cosmos3-nano",
+      "path": "/nvidia/cosmos3-nano"
+    },
+    {
+      "name": "cosmos3-nano-reasoner",
+      "path": "/nvidia/cosmos3-nano-reasoner"
+    },
+    {
+      "name": "qwen-image",
+      "path": "/qwen/qwen-image"
+    },
+    {
+      "name": "qwen-image-edit",
+      "path": "/qwen/qwen-image-edit"
+    },
+    {
+      "name": "nemotron-3-nano-omni-30b-a3b-reasoning",
+      "path": "/nvidia/nemotron-3-nano-omni-30b-a3b-reasoning"
+    },
+    {
+      "name": "Relighting",
+      "path": "/nvidia/relighting"
+    },
+    {
+      "name": "synthetic-video-detector",
+      "path": "/nvidia/synthetic-video-detector"
+    },
+    {
+      "name": "Active Speaker Detection",
+      "path": "/nvidia/active-speaker-detection"
+    },
+    {
+      "name": "LipSync",
+      "path": "/nvidia/lipsync"
+    },
+    {
+      "name": "ising-calibration-1-35b-a3b",
+      "path": "/nvidia/ising-calibration-1-35b-a3b"
+    },
+    {
+      "name": "gemma-4-31b-it",
+      "path": "/google/gemma-4-31b-it"
+    },
+    {
+      "name": "llama-nemotron-rerank-vl-1b-v2",
+      "path": "/nvidia/llama-nemotron-rerank-vl-1b-v2"
+    },
+    {
+      "name": "nemotron-voicechat",
+      "path": "/nvidia/nemotron-voicechat"
+    },
+    {
+      "name": "nemotron-asr-streaming",
+      "path": "/nvidia/nemotron-asr-streaming"
+    },
+    {
+      "name": "flux.2-klein-4b",
+      "path": "/black-forest-labs/flux_2-klein-4b"
+    },
+    {
+      "name": "nemotron-ocr-v1",
+      "path": "/nvidia/nemotron-ocr-v1"
+    },
+    {
+      "name": "nemotron-3-super-120b-a12b",
+      "path": "/nvidia/nemotron-3-super-120b-a12b"
+    },
+    {
+      "name": "nemotron-table-structure-v1",
+      "path": "/nvidia/nemotron-table-structure-v1"
+    },
+    {
+      "name": "nemotron-page-elements-v3",
+      "path": "/nvidia/nemotron-page-elements-v3"
+    },
+    {
+      "name": "nemotron-graphic-elements-v1",
+      "path": "/nvidia/nemotron-graphic-elements-v1"
+    },
+    {
+      "name": "cosmos-transfer2.5-2b",
+      "path": "/nvidia/cosmos-transfer2_5-2b"
+    },
+    {
+      "name": "llama-nemotron-embed-vl-1b-v2",
+      "path": "/nvidia/llama-nemotron-embed-vl-1b-v2"
+    },
+    {
+      "name": "evo2-40b-forward",
+      "path": "/arc/evo2-40b-forward"
+    },
+    {
+      "name": "evo2-7b-forward",
+      "path": "/arc/evo2-7b-forward"
+    },
+    {
+      "name": "streampetr",
+      "path": "/nvidia/streampetr"
+    },
+    {
+      "name": "nemotron-parse",
+      "path": "/nvidia/nemotron-parse"
+    },
+    {
+      "name": "llama-3.1-nemotron-safety-guard-8b-v3",
+      "path": "/nvidia/llama-3_1-nemotron-safety-guard-8b-v3"
+    },
+    {
+      "name": "openfold3",
+      "path": "/openfold/openfold3"
+    },
+    {
+      "name": "parakeet-ctc-0.6b-zh-tw",
+      "path": "/nvidia/parakeet-ctc-0_6b-zh-tw"
+    },
+    {
+      "name": "parakeet-ctc-0.6b-zh-cn",
+      "path": "/nvidia/parakeet-ctc-0_6b-zh-cn"
+    },
+    {
+      "name": "parakeet-ctc-0.6b-es",
+      "path": "/nvidia/parakeet-ctc-0_6b-es"
+    },
+    {
+      "name": "parakeet-ctc-0.6b-vi",
+      "path": "/nvidia/parakeet-ctc-0_6b-vi"
+    },
+    {
+      "name": "TRELLIS",
+      "path": "/microsoft/trellis"
+    },
+    {
+      "name": "stable-diffusion-3.5-large",
+      "path": "/stabilityai/stable-diffusion-3_5-large"
+    },
+    {
+      "name": "FLUX.1-Kontext-dev",
+      "path": "/black-forest-labs/flux_1-kontext-dev"
+    },
+    {
+      "name": "gpt-oss-20b",
+      "path": "/openai/gpt-oss-20b"
+    },
+    {
+      "name": "parakeet-tdt-0.6b-v2",
+      "path": "/nvidia/parakeet-tdt-0_6b-v2"
+    },
+    {
+      "name": "nemoretriever-ocr",
+      "path": "/nvidia/nemoretriever-ocr"
+    },
+    {
+      "name": "llama-guard-4-12b",
+      "path": "/meta/llama-guard-4-12b"
+    },
+    {
+      "name": "riva-translate-1.6b",
+      "path": "/nvidia/riva-translate-1_6b"
+    },
+    {
+      "name": "Background Noise Removal",
+      "path": "/nvidia/bnr"
+    },
+    {
+      "name": "Boltz-2",
+      "path": "/mit/boltz2"
+    },
+    {
+      "name": "magpie-tts-zeroshot",
+      "path": "/nvidia/magpie-tts-zeroshot"
+    },
+    {
+      "name": "FLUX.1-schnell",
+      "path": "/black-forest-labs/flux_1-schnell"
+    },
+    {
+      "name": "parakeet-1.1b-rnnt-multilingual-asr",
+      "path": "/nvidia/parakeet-1_1b-rnnt-multilingual-asr"
+    },
+    {
+      "name": "FLUX.1-dev",
+      "path": "/black-forest-labs/flux_1-dev"
+    },
+    {
+      "name": "sparsedrive",
+      "path": "/nvidia/sparsedrive"
+    },
+    {
+      "name": "bevformer",
+      "path": "/nvidia/bevformer"
+    },
+    {
+      "name": "magpie-tts-multilingual",
+      "path": "/nvidia/magpie-tts-multilingual"
+    },
+    {
+      "name": "msa-search",
+      "path": "/colabfold/msa-search"
+    },
+    {
+      "name": "openfold2",
+      "path": "/openfold/openfold2"
+    },
+    {
+      "name": "evo2-40b",
+      "path": "/arc/evo2-40b"
+    },
+    {
+      "name": "whisper-large-v3",
+      "path": "/openai/whisper-large-v3"
+    },
+    {
+      "name": "canary-1b-asr",
+      "path": "/nvidia/canary-1b-asr"
+    },
+    {
+      "name": "llama-3.1-nemoguard-8b-topic-control",
+      "path": "/nvidia/llama-3_1-nemoguard-8b-topic-control"
+    },
+    {
+      "name": "nemoguard-jailbreak-detect",
+      "path": "/nvidia/nemoguard-jailbreak-detect"
+    },
+    {
+      "name": "llama-3.1-nemoguard-8b-content-safety",
+      "path": "/nvidia/llama-3_1-nemoguard-8b-content-safety"
+    },
+    {
+      "name": "genmol",
+      "path": "/nvidia/genmol-generate"
+    },
+    {
+      "name": "paddleocr",
+      "path": "/baidu/paddleocr"
+    },
+    {
+      "name": "conformer-ctc-asr",
+      "path": "/nvidia/conformer-ctc-asr"
+    },
+    {
+      "name": "fourcastnet",
+      "path": "/nvidia/fourcastnet"
+    },
+    {
+      "name": "Studio Voice",
+      "path": "/nvidia/studiovoice"
+    },
+    {
+      "name": "llama-3.2-11b-vision-instruct",
+      "path": "/meta/llama-3.2-11b-vision-instruct"
+    },
+    {
+      "name": "llama-3.2-90b-vision-instruct",
+      "path": "/meta/llama-3.2-90b-vision-instruct"
+    },
+    {
+      "name": "megatron-1b-nmt",
+      "path": "/nvidia/megatron-1b-nmt"
+    },
+    {
+      "name": "parakeet-ctc-1.1b-asr",
+      "path": "/nvidia/parakeet-ctc-1_1b-asr"
+    },
+    {
+      "name": "parakeet-ctc-0.6b-asr",
+      "path": "/nvidia/parakeet-ctc-0_6b-asr"
+    },
+    {
+      "name": "proteinmpnn",
+      "path": "/ipd/proteinmpnn"
+    },
+    {
+      "name": "eyecontact",
+      "path": "/nvidia/eyecontact"
+    },
+    {
+      "name": "rfdiffusion",
+      "path": "/ipd/rfdiffusion"
+    },
+    {
+      "name": "paligemma",
+      "path": "/google/google-paligemma"
+    },
+    {
+      "name": "molmim",
+      "path": "/nvidia/molmim-generate"
+    },
+    {
+      "name": "diffdock",
+      "path": "/mit/diffdock"
+    },
+    {
+      "name": "cuopt",
+      "path": "/nvidia/nvidia-cuopt"
+    }
+  ]
+}

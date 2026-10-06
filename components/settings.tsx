@@ -21,7 +21,7 @@ export function Settings({ apiKey, model, models, configured, catalogError, onCl
       <label htmlFor="model-id">Model ID</label>
       <input id="model-id" list="settings-models" value={selected} onChange={e => setSelected(e.target.value)} placeholder="provider/model-name" required spellCheck={false} />
       <datalist id="settings-models">{models.map(id => <option key={id} value={id} />)}</datalist>
-      <p className="field-help">Enter a NVIDIA chat model ID.</p>
+      <p className="field-help">Enter an NVIDIA chat model ID.</p>
       {catalogError && <p className="field-help warning">{catalogError}</p>}
       <button className="save-button" type="submit">Save</button>
     </form>

@@ -31,6 +31,8 @@ Chats and theme preferences stay in this browser's local storage. Pasted keys st
 
 Settings searches all catalog entries. Only API-listed text chat models are selectable. Embeddings, specialized image/audio/video models, and catalog-only downloads link to their NVIDIA instructions. Multimodal chat models can receive text here; attachments and tool execution are not implemented. Catalog presence does not guarantee account access.
 
+The app shows a waiting status after 10 seconds, cancels a request with no text or reasoning after 90 seconds, and cancels a stalled response after 60 seconds without new text. Active responses have a five-minute limit. Failed requests restore the prompt and retain any partial reply. NVIDIA can list models that are delayed or unavailable at its chat endpoint; switching models can resolve those provider errors.
+
 The snapshot combines 80 API model IDs and all 97 website entries checked on 7 October 2026, merged into 150 unique entries. The API list refreshes at startup and through the refresh button. If unavailable, the saved snapshot remains usable.
 
 ```sh
@@ -63,7 +65,7 @@ npm run check:secrets
 npm run build
 ```
 
-`app/api/` contains the server-side NVIDIA proxy, `lib/stream.ts` parses streaming events, `lib/model-catalog.ts` merges and searches models, and `components/markdown.tsx` renders code and Markdown without raw HTML.
+`app/api/` contains the server-side NVIDIA proxy, `lib/chat-client.ts` handles request deadlines and cancellation, `lib/stream.ts` parses streaming events, `lib/model-catalog.ts` merges and searches models, and `components/markdown.tsx` renders code and Markdown without raw HTML.
 
 The app binds to loopback and has no multi-user authentication. It is intended for personal local use. See [SECURITY.md](SECURITY.md) before changing its deployment model.
 

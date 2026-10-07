@@ -8,7 +8,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { ModelDialog } from "@/components/model-dialog";
 import { RenameChat } from "@/components/rename-chat";
 import { CHAT_STORAGE_KEY, DEFAULT_MODEL, newConversation, readConversations, type Conversation, type Message } from "@/lib/types";
-import { readChatStream } from "@/lib/stream";
+import { requestChat } from "@/lib/chat-client";
 
 export default function Home() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
@@ -27,6 +27,7 @@ export default function Home() {
   const [sidebar, setSidebar] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [waiting, setWaiting] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState("");
   const [follow, setFollow] = useState(true);
@@ -96,25 +97,18 @@ export default function Home() {
       setConversations(all => [{ ...current, title: prompt.slice(0, 48), messages: [...history, reply] }, ...all]);
       setActiveId(current.id);
     } else updateMessages(current.id, () => [...history, reply]);
-    setInput(""); setError(""); setBusy(true); setFollow(true);
+    setInput(""); setError(""); setBusy(true); setWaiting(false); setFollow(true);
     const controller = new AbortController(); abort.current = controller;
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST", headers: { "Content-Type": "application/json", ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}) },
-        body: JSON.stringify({ model, messages: history.map(({ role, content }) => ({ role, content })) }), signal: controller.signal,
-      });
-      if (!response.ok) { const data = await response.json(); throw new Error(data.error || "The request failed. Please try again."); }
-      if (!response.body) throw new Error("The model returned an empty response.");
-      let hasContent = false;
-      await readChatStream(response.body, delta => {
-        if (delta.content || delta.reasoning) hasContent = true;
+      await requestChat({ model, apiKey, messages: history.map(({ role, content }) => ({ role, content })), signal: controller.signal, onWaiting: () => setWaiting(true), onDelta: delta => {
+        if (delta.content || delta.reasoning) setWaiting(false);
         updateMessages(current.id, all => all.map(m => m.id === reply.id ? { ...m, content: m.content + (delta.content ?? ""), reasoning: (m.reasoning ?? "") + (delta.reasoning ?? "") } : m));
-      });
-      if (!hasContent) throw new Error("The model returned no text. Try another chat model.");
+      } });
     } catch (e) {
-      if (!controller.signal.aborted) { setError(e instanceof Error ? e.message : "Something went wrong. Please try again."); setInput(draft => draft || prompt); }
+      if (!controller.signal.aborted) setError(e instanceof Error ? e.message : "Something went wrong. Please try again.");
+      setInput(draft => draft || prompt);
       updateMessages(current.id, all => all.filter(m => m.id !== reply.id || m.content || m.reasoning));
-    } finally { setBusy(false); running.current = false; abort.current = null; textarea.current?.focus(); }
+    } finally { setBusy(false); setWaiting(false); running.current = false; abort.current = null; textarea.current?.focus(); }
   }
 
   async function copyMessage(message: Message) {
@@ -137,7 +131,7 @@ export default function Home() {
     <main className={`main ${messages.length === 0 ? "is-empty" : ""}`}>
       <header className="topbar"><div className="model-area"><button className="icon-button mobile-menu" aria-label="Open sidebar" onClick={() => setSidebar(true)}><Menu size={20} /></button><button className="model-button" disabled={busy} onClick={() => setModelDialog(true)} aria-label={`Change model: ${shortModel}`}><span>{shortModel}</span><ChevronDown size={15} /></button></div><div className="topbar-actions"><ThemeToggle /><button className="icon-button" disabled={busy} onClick={() => setSettings(true)} aria-label="Settings" title="Settings"><Settings2 size={18} /></button></div></header>
       <div className="conversation-scroll" ref={scroller} onScroll={() => { const el = scroller.current; if (el) setFollow(el.scrollHeight - el.scrollTop - el.clientHeight < 100); }}>
-        {messages.length === 0 ? <section className="empty-state"><h1>New chat</h1></section> : <section className="messages" aria-label="Chat messages" aria-busy={busy}>{messages.map(m => <article key={m.id} className={`message ${m.role}`}><div className="message-avatar">{m.role === "assistant" ? <Sparkles size={17} /> : "Y"}</div><div className="message-body"><div className="message-label">{m.role === "user" ? "You" : "Nim"}{m.role === "assistant" && <span>{m.model?.split("/").pop()}</span>}</div>{m.reasoning && <details className="reasoning"><summary>Thinking</summary><div>{m.reasoning}</div></details>}{m.role === "user" ? <div className="user-content">{m.content}</div> : <MessageMarkdown content={m.content} />}{m.role === "assistant" && !m.content && busy && <div className="typing" role="status" aria-label="Generating response"><span /><span /><span /></div>}{m.role === "assistant" && m.content && <button className="copy-message" aria-label="Copy response" onClick={() => copyMessage(m)}>{copied === m.id ? <Check size={14} /> : <Copy size={14} />}{copied === m.id ? "Copied" : "Copy"}</button>}</div></article>)}</section>}
+        {messages.length === 0 ? <section className="empty-state"><h1>New chat</h1></section> : <section className="messages" aria-label="Chat messages" aria-busy={busy}>{messages.map(m => <article key={m.id} className={`message ${m.role}`}><div className="message-avatar">{m.role === "assistant" ? <Sparkles size={17} /> : "Y"}</div><div className="message-body"><div className="message-label">{m.role === "user" ? "You" : "Nim"}{m.role === "assistant" && <span>{m.model?.split("/").pop()}</span>}</div>{m.reasoning && <details className="reasoning"><summary>Thinking</summary><div>{m.reasoning}</div></details>}{m.role === "user" ? <div className="user-content">{m.content}</div> : <MessageMarkdown content={m.content} />}{m.role === "assistant" && !m.content && busy && m.id === messages.at(-1)?.id && <div role="status" aria-label={waiting ? "Waiting for NVIDIA" : "Generating response"}>{waiting ? <p className="waiting-status">Waiting for NVIDIA…</p> : <div className="typing"><span /><span /><span /></div>}</div>}{m.role === "assistant" && m.content && <button className="copy-message" aria-label="Copy response" onClick={() => copyMessage(m)}>{copied === m.id ? <Check size={14} /> : <Copy size={14} />}{copied === m.id ? "Copied" : "Copy"}</button>}</div></article>)}</section>}
       </div>
       <div className="composer-region">
         {!follow && messages.length > 0 && <button className="jump-bottom icon-button" aria-label="Jump to latest message" onClick={() => setFollow(true)}><ArrowDown size={18} /></button>}

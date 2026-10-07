@@ -144,6 +144,7 @@ button, a, input, textarea { -webkit-tap-highlight-color: transparent; }
 .reasoning summary { cursor: pointer; }
 .reasoning > div { white-space: pre-wrap; max-height: 260px; overflow-y: auto; line-height: 1.7; margin-top: 10px; }
 .typing { display: flex; gap: 4px; padding: 10px 0; }
+.waiting-status { color: var(--muted); font-size: 12px; margin: 10px 0; }
 .typing span { width: 5px; height: 5px; background: var(--muted); border-radius: 50%; animation: pulse 1.1s infinite; }
 .typing span:nth-child(2) { animation-delay: .15s; }
 .typing span:nth-child(3) { animation-delay: .3s; }

@@ -1,6 +1,6 @@
 export type StreamDelta = { content?: string; reasoning?: string; done?: boolean };
 
-export async function readChatStream(body: ReadableStream<Uint8Array>, onDelta: (delta: StreamDelta) => void) {
+export async function readChatStream(body: ReadableStream<Uint8Array>, onDelta: (delta: StreamDelta) => void, signal?: AbortSignal) {
   const reader = body.getReader();
   const decoder = new TextDecoder();
   let buffer = "";
@@ -15,18 +15,23 @@ export async function readChatStream(body: ReadableStream<Uint8Array>, onDelta: 
     const delta = choice?.delta;
     if (delta) onDelta({ content: delta.content ?? "", reasoning: delta.reasoning_content ?? delta.reasoning ?? "" });
     if (choice?.finish_reason === "length") onDelta({ content: "\n\n*Response reached the model's output limit. Ask it to continue.*" });
+    if (choice?.finish_reason) { done = true; onDelta({ done: true }); }
   }
+  const cancel = () => { void reader.cancel(signal?.reason).catch(() => {}); };
+  signal?.addEventListener("abort", cancel, { once: true });
   try {
     while (!done) {
+      signal?.throwIfAborted();
       const chunk = await reader.read();
+      signal?.throwIfAborted();
       buffer += decoder.decode(chunk.value, { stream: !chunk.done });
       buffer = buffer.replace(/\r\n/g, "\n");
       let boundary;
-      while ((boundary = buffer.indexOf("\n\n")) !== -1) {
+      while (!done && (boundary = buffer.indexOf("\n\n")) !== -1) {
         event(buffer.slice(0, boundary));
         buffer = buffer.slice(boundary + 2);
       }
-      if (chunk.done) { if (buffer.trim()) event(buffer); break; }
+      if (chunk.done) { if (!done && buffer.trim()) event(buffer); break; }
     }
-  } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
+  } finally { signal?.removeEventListener("abort", cancel); await reader.cancel().catch(() => {}); reader.releaseLock(); }
 }

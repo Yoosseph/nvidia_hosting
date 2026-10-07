@@ -29,3 +29,14 @@ test("decodes Unicode split across network chunks", async () => {
   await readChatStream(body, d => { result += d.content ?? ""; });
   assert.equal(result, "👋 café");
 });
+
+test("finish_reason completes generation even when the provider keeps the connection open", async () => {
+  let cancelled = false, done = false;
+  const body = new ReadableStream<Uint8Array>({ start(c) { c.enqueue(new TextEncoder().encode('data: {"choices":[{"delta":{"content":"Hello"},"finish_reason":"stop"}]}\n\n')); }, cancel() { cancelled = true; } });
+  let timer: ReturnType<typeof setTimeout>;
+  try {
+    await Promise.race([readChatStream(body, d => { done ||= !!d.done; }), new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("Chat stayed stuck generating after finish_reason")), 100); })]);
+    assert.equal(done, true);
+    assert.equal(cancelled, true);
+  } finally { clearTimeout(timer!); }
+});
